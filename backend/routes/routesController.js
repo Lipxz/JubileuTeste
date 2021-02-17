@@ -26,7 +26,7 @@ router.get(`${apiUrl}/origins-destinations`, () => {
     response.send(originsAndDestinations);    
 });
 
-router.get(`${apiUrl}/calculate-price-with-plan`, (request, response) => {
+router.post(`${apiUrl}/calculate-price-with-plan`, (request, response) => {
     const body = request.body;
     
     //
@@ -42,6 +42,7 @@ router.get(`${apiUrl}/calculate-price-with-plan`, (request, response) => {
     const origin = body.origin;
     const destination = body.destination;
 
+    const plan = body.plan;
     const minutes = body.minutes;
 
     const chargePerMinute = getChargePerMinute(origin, destination);
@@ -49,16 +50,21 @@ router.get(`${apiUrl}/calculate-price-with-plan`, (request, response) => {
 
     const exceededMinutes = minutes - maxNonChargePlanTime;
 
+    console.log(body);
+
     if (exceededMinutes < 0 || exceededMinutes === 0) {
         price = 0;
     } else {
         price = exceededMinutes * chargePerMinute;
     } 
+    
+    console.log(`${exceededMinutes} ${price} Minutes: ${minutes}`);
+    console.log('JORGE PORRA')
 
-    return response.send(price);
+    return response.send({ calculatedPrice: price });
 });
 
-router.get(`${apiUrl}/calculate-price-without-plan`, (request, response) => {
+router.post(`${apiUrl}/calculate-price-without-plan`, (request, response) => {
     const body = request.body;
 
     //
@@ -70,13 +76,19 @@ router.get(`${apiUrl}/calculate-price-without-plan`, (request, response) => {
 
     const origin = body.origin;
     const destination = body.destination;
+    
     const minutes = body.minutes;
 
     const chargePerMinute = getChargePerMinute(origin, destination);
     
     let price = chargePerMinute * minutes;
 
-    return response.send(price);
+    console.log(price);
+    console.log('JORGE PORRA')
+
+    console.log(`${chargePerMinute} ${price} Minutes: ${minutes}`);
+
+    return response.send({ calculatedPrice: price });
 });
 
 module.exports = router;
